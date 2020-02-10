@@ -41,7 +41,12 @@ namespace flight_api.Controllers
                 query = query.Where(b => b.PassengerId == passengerId.Value);
             }
 
-            return await query.ToListAsync();
+            if (id.HasValue) {
+                return new JsonResult(await query.FirstOrDefaultAsync());
+            }
+            else {
+                return await query.ToListAsync();
+            }
                       
         }
 
@@ -113,6 +118,11 @@ namespace flight_api.Controllers
         {
             if (flightBooking.Id < 10 && flightBooking.Id != 0) {
                 return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
+            }
+
+            if (flightBooking.Id != 0) {
+                await PutFlightBooking(flightBooking.Id, flightBooking);
+                return AcceptedAtAction("GetFlight", new { id = flightBooking.Id }, flightBooking);
             }
 
             using var _context = new FlightContext();

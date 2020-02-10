@@ -18,7 +18,6 @@ namespace flight_api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Flight>>> GetFlights(int? id = null, string from = "", string to = "", bool expand = false)
         {
-            List<Flight> result;
 
             if (!id.HasValue && expand) {
                 return BadRequest("expand can only be used if one and only one record is requested via providing an id!");
@@ -46,10 +45,14 @@ namespace flight_api.Controllers
                     flights = flights.Where(f => f.To.StartsWith(to));
                 }
 
-                result = await flights.ToListAsync();
+                if (id.HasValue) {
+                    return new JsonResult(await flights.FirstOrDefaultAsync());
+                }
+                else {
+                    return await flights.ToListAsync();
+                }
+                
             }
-
-            return result;
 
         }        
 
@@ -121,6 +124,11 @@ namespace flight_api.Controllers
         {
             if (flight.Id < 10 && flight.Id != 0) {
                 return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
+            }
+
+            if (flight.Id != 0) {
+                await PutFlight(flight.Id, flight);
+                return AcceptedAtAction("GetFlight", new { id = flight.Id }, flight);
             }
 
             using var context = new FlightContext();

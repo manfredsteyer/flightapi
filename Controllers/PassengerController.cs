@@ -41,7 +41,12 @@ namespace flight_api.Controllers
                 passengers = passengers.Where(p => p.FirstName.StartsWith(firstName));
             }
 
-            return await passengers.ToListAsync();
+            if (id.HasValue) {
+                return new JsonResult(await passengers.FirstOrDefaultAsync());
+            }
+            else {
+                return await passengers.ToListAsync();
+            }
         }
 
         // GET: api/Passenger/5
@@ -112,6 +117,11 @@ namespace flight_api.Controllers
         {
             if (passenger.Id < 10 && passenger.Id != 0) {
                 return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
+            }
+
+            if (passenger.Id != 0) {
+                await PutPassenger(passenger.Id, passenger);
+                return AcceptedAtAction("GetFlight", new { id = passenger.Id }, passenger);
             }
 
             using var _context = new FlightContext();
