@@ -15,12 +15,23 @@ namespace flight_api.Controllers
 
         // GET: api/Passenger
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Passenger>>> GetPassengers(string name = "", string firstName = "")
+        public async Task<ActionResult<IEnumerable<Passenger>>> GetPassengers(int? id = null, string name = "", string firstName = "", bool expand = false)
         {
+            if (!id.HasValue && expand) {
+                return BadRequest("expand can only be used if one and only one record is requested via providing an id!");
+            }            
 
             using var _context = new FlightContext();
 
             var passengers =  _context.Passengers.AsQueryable();
+                
+            if (expand) {
+                passengers = passengers.Include(p => p.FlightBookings).ThenInclude(fb => fb.Flight);
+            }
+
+            if (id.HasValue) {
+                passengers = passengers.Where(p => p.Id == id.Value);
+            }
 
             if (!string.IsNullOrEmpty(name)) {
                 passengers = passengers.Where(p => p.Name.StartsWith(name));

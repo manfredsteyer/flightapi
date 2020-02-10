@@ -16,9 +16,13 @@ namespace flight_api.Controllers
 
         // GET: api/Flight
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Flight>>> GetFlights(string from = "", string to = "")
+        public async Task<ActionResult<IEnumerable<Flight>>> GetFlights(int? id = null, string from = "", string to = "", bool expand = false)
         {
             List<Flight> result;
+
+            if (!id.HasValue && expand) {
+                return BadRequest("expand can only be used if one and only one record is requested via providing an id!");
+            }
 
             using (var context = new FlightContext()) {
 
@@ -26,7 +30,14 @@ namespace flight_api.Controllers
 
                 // flights = flights.Where(f => (f.From == from || from == "") && (f.To == to || to == ""));
                 // flights = flights.Where(f => f.From.StartsWith(from) && f.To.StartsWith(to));
-                
+                if (expand) {
+                    flights = flights.Include(f => f.FlightBookings).ThenInclude(fb => fb.Passenger);
+                }
+
+                if (id.HasValue) {
+                    flights = flights.Where(p => p.Id == id.Value);
+                }
+
                 if (!string.IsNullOrEmpty(from)) {
                     flights = flights.Where(f => f.From.StartsWith(from));
                 }
