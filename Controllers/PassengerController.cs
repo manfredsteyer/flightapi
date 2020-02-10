@@ -20,26 +20,32 @@ namespace flight_api.Controllers
 
             using var _context = new FlightContext();
 
-            return await _context
-                            .Passengers
-                            .Where(p => 
-                                (p.Name == name || name == "") 
-                                && (p.FirstName == firstName || firstName == "" ))
-                            .ToListAsync();
+            var passengers =  _context.Passengers.AsQueryable();
+
+            if (!string.IsNullOrEmpty(name)) {
+                passengers = passengers.Where(p => p.Name.StartsWith(name));
+            }
+
+            if (!string.IsNullOrEmpty(firstName)) {
+                passengers = passengers.Where(p => p.FirstName.StartsWith(firstName));
+            }
+
+            return await passengers.ToListAsync();
         }
 
         // GET: api/Passenger/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Passenger>> GetPassenger(long id)
+        public async Task<ActionResult<Passenger>> GetPassenger(long id, bool expand = false)
         {
             using var _context = new FlightContext();
 
-            var passenger = await _context
-                                    .Passengers
-                                    .Include(p => p.FlightBookings)
-                                    .ThenInclude(fb => fb.Flight)
-                                    .Where(p => p.Id == id)
-                                    .FirstAsync();
+            var query =  _context.Passengers.AsQueryable();
+
+            if (expand) {
+                query = query.Include(p => p.FlightBookings).ThenInclude(fb => fb.Flight);
+            }
+            
+            var passenger = await query.Where(p => p.Id == id).FirstAsync();
 
             if (passenger == null)
             {
@@ -56,6 +62,10 @@ namespace flight_api.Controllers
         public async Task<IActionResult> PutPassenger(long id, Passenger passenger)
         {
             using var _context = new FlightContext();
+
+            if (id < 10 && id != 0) {
+                return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
+            }
 
             if (id != passenger.Id)
             {
@@ -89,6 +99,10 @@ namespace flight_api.Controllers
         [HttpPost]
         public async Task<ActionResult<Passenger>> PostPassenger(Passenger passenger)
         {
+            if (passenger.Id < 10 && passenger.Id != 0) {
+                return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
+            }
+
             using var _context = new FlightContext();
 
             _context.Passengers.Add(passenger);
@@ -101,6 +115,10 @@ namespace flight_api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Passenger>> DeletePassenger(long id)
         {
+            if (id < 10 && id != 0) {
+                return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
+            }
+
             using var _context = new FlightContext();
 
             var passenger = await _context.Passengers.FindAsync(id);

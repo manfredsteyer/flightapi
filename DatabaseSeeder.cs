@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 public class DatabaseSeeder {
 
-    private string[] airports = {
+    public static readonly string[] airports = {
         "Graz", "Wien", "Salzburg", "Linz",
         "Hamburg", "München", "Nürnberg", "Hamburg", "Berlin", 
         "Stuttgart", "Frankfurt", "Bremen",
@@ -31,75 +31,76 @@ public class DatabaseSeeder {
     };
 
 
+
     // Creates some static default data
     private Tuple<Flight[], Passenger[], FlightBooking[]> CreateDefaults() {
 
         var flight1 = new Flight { 
-            // Id = 1, 
+            Id = 1, 
             From = "Hamburg", To="Graz", 
             Date=DateTime.Now.AddDays(20), Delayed = false };
         
         var flight2 = new Flight { 
-            // Id = 2, 
+            Id = 2, 
             From = "Hamburg", To="Graz", 
             Date=DateTime.Now.AddDays(21), Delayed = true };
 
         var flight3 = new Flight { 
-            // Id = 3, 
+            Id = 3, 
             From = "Graz", To="Hamburg", 
             Date=DateTime.Now.AddDays(20), Delayed = false };
         
         var flight4 = new Flight { 
-            // Id = 4, 
+            Id = 4, 
             From = "Graz", To="Hamburg", 
             Date=DateTime.Now.AddDays(21), Delayed = true };
 
         var flight5 = new Flight { 
-            // Id = 5, 
+            Id = 5, 
             From = "Graz", To="Hamburg", 
             Date=DateTime.Now.AddDays(22), Delayed = false };
 
         var passenger1 = new Passenger {
-            // Id = 1, 
+            Id = 1, 
             Name = "Muster", FirstName = "Max", 
             BonusMiles = 20000, PassengerStatus = "A"
         };
 
         var passenger2 = new Passenger {
-            // Id = 2, 
+            Id = 2, 
             Name = "Susi", FirstName = "Sorglos", 
             BonusMiles = 21000, PassengerStatus = "A"
         };
 
         var passenger3 = new Passenger {
-            // Id = 3, 
+            Id = 3, 
             Name = "Anna", FirstName = "Muster", 
             BonusMiles = 7000, PassengerStatus = "B"
         };
 
         var booking1 = new FlightBooking { 
-            // Id = 1, 
+            Id = 1, 
             BookingDate = DateTime.Now.AddDays(-5),
             Passenger = passenger1, Flight = flight1,
             Seat = "1D", FlightClass = 2
         };
 
         var booking2 = new FlightBooking { 
-            // Id = 2, 
+            Id = 2, 
             BookingDate = DateTime.Now.AddDays(-3),
             Passenger = passenger2, Flight = flight1,
             Seat = "1F", FlightClass = 2
         };
 
         var booking3 = new FlightBooking { 
-            // Id = 3, 
+            Id = 3, 
             BookingDate = DateTime.Now.AddDays(-4),
             Passenger = passenger2, Flight = flight2,
             Seat = "1F", FlightClass = 2
         };
 
         var booking4 = new FlightBooking { 
-            // Id = 4, 
+            Id = 4, 
             BookingDate = DateTime.Now.AddDays(-2),
             Passenger = passenger3, Flight = flight3,
             Seat = "1F", FlightClass = 2
@@ -118,7 +119,7 @@ public class DatabaseSeeder {
         var passengers = new List<Passenger>();
         var bookings = new List<FlightBooking>();
 
-        // var nextId = 10;
+        var nextId = 10;
         var rand = new Random();
 
         foreach (var from in airports) {
@@ -129,7 +130,7 @@ public class DatabaseSeeder {
                 for(var i=0; i< rand.Next(10); i++ ) {
 
                     flights.Add(new Flight {
-                        // Id = nextId++,
+                        Id = nextId++,
                         From = from,
                         To = to,
                         Date = DateTime.Now.AddDays(20 + i),
@@ -143,7 +144,7 @@ public class DatabaseSeeder {
         foreach (var firstName in firstNames) {
             foreach (var lastName in lastNames) {
                 passengers.Add(new Passenger {
-                    // Id = nextId++,
+                    Id = nextId++,
                     FirstName = firstName,
                     Name = lastName,
                     BonusMiles = rand.Next(500000),
@@ -159,7 +160,7 @@ public class DatabaseSeeder {
             var flight = flights[rand.Next(Math.Min(flights.Count, 10))];
 
             bookings.Add(new FlightBooking {
-                // Id = nextId++,
+                Id = nextId++,
                 BookingDate = DateTime.Now.AddDays(i % 5 * -1),
                 Seat = "",
                 FlightClass = rand.Next(2) + 1,

@@ -28,6 +28,13 @@ namespace flight_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder => {
+                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
+
             services.AddControllers()
                 .AddNewtonsoftJson(opt => {
                     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -59,12 +66,14 @@ namespace flight_api
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "FlightAPI V1");
                 c.RoutePrefix = string.Empty;
-
             });
 
             app.UseRouting();
+
+            app.UseCors();
+
 
             app.UseAuthorization();
 

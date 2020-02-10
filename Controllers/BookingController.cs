@@ -35,11 +35,17 @@ namespace flight_api.Controllers
 
         // GET: api/Booking/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<FlightBooking>> GetFlightBooking(long id)
+        public async Task<ActionResult<FlightBooking>> GetFlightBooking(long id, bool expand = true)
         {
             using var _context = new FlightContext();
 
-            var flightBooking = await _context.FlightBookings.FindAsync(id);
+            var query = _context.FlightBookings.AsQueryable();
+            
+            if (expand) {
+                query = query.Include(fb => fb.Flight).Include(fb => fb.Passenger);
+            }
+
+            var flightBooking = await query.FirstAsync();
 
             if (flightBooking == null)
             {
@@ -56,6 +62,10 @@ namespace flight_api.Controllers
         public async Task<IActionResult> PutFlightBooking(long id, FlightBooking flightBooking)
         {
             using var _context = new FlightContext();
+
+            if (id < 10 && id != 0) {
+                return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
+            }
 
             if (id != flightBooking.Id)
             {
@@ -89,6 +99,10 @@ namespace flight_api.Controllers
         [HttpPost]
         public async Task<ActionResult<FlightBooking>> PostFlightBooking(FlightBooking flightBooking)
         {
+            if (flightBooking.Id < 10 && flightBooking.Id != 0) {
+                return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
+            }
+
             using var _context = new FlightContext();
 
             _context.FlightBookings.Add(flightBooking);
@@ -101,6 +115,11 @@ namespace flight_api.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<FlightBooking>> DeleteFlightBooking(long id)
         {
+
+            if (id < 10 && id != 0) {
+                return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
+            }
+
             using var _context = new FlightContext();
 
             var flightBooking = await _context.FlightBookings.FindAsync(id);
