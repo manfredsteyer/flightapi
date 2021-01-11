@@ -37,27 +37,27 @@ public class DatabaseSeeder {
 
         var flight1 = new Flight { 
             Id = 1, 
-            From = "Hamburg", To="Graz", 
+            From = "Graz", To="Hamburg", 
             Date=DateTime.Now.AddDays(20), Delayed = false };
         
         var flight2 = new Flight { 
             Id = 2, 
-            From = "Hamburg", To="Graz", 
+            From = "Graz", To="Hamburg", 
             Date=DateTime.Now.AddDays(21), Delayed = true };
 
         var flight3 = new Flight { 
             Id = 3, 
-            From = "Graz", To="Hamburg", 
+            From = "Hamburg", To="Graz", 
             Date=DateTime.Now.AddDays(20), Delayed = false };
         
         var flight4 = new Flight { 
             Id = 4, 
-            From = "Graz", To="Hamburg", 
+            From = "Hamburg", To="Graz", 
             Date=DateTime.Now.AddDays(21), Delayed = true };
 
         var flight5 = new Flight { 
             Id = 5, 
-            From = "Graz", To="Hamburg", 
+            From = "Hamburg", To="Graz", 
             Date=DateTime.Now.AddDays(22), Delayed = false };
 
         var passenger1 = new Passenger {
@@ -126,6 +126,7 @@ public class DatabaseSeeder {
             foreach (var to in airports) {
 
                 if (from == to) continue;
+                if (from == "Hamburg" && to == "Graz") continue;
 
                 for(var i=0; i< rand.Next(10); i++ ) {
 

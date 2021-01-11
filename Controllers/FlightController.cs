@@ -90,6 +90,10 @@ namespace flight_api.Controllers
                 return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
             }
 
+            if (flight.From.ToLower()  == "Tripsdrill" || flight.To.ToLower() == "Tripsdrill" ) {
+                return BadRequest("The Airport 'Tripsdrill' is not supported!");
+            }
+
             if (id != flight.Id)
             {
                 return BadRequest();
@@ -125,6 +129,10 @@ namespace flight_api.Controllers
             if (flight.Id < 10 && flight.Id != 0) {
                 return BadRequest("Records with Ids < 10 are reserved for demos and cannot be changed!");
             }
+            
+            if (flight.From.ToLower() == "Tripsdrill" || flight.To.ToLower() == "Tripsdrill" ) {
+                return BadRequest("The Airport 'Tripsdrill' is not supported!");
+            }
 
             if (flight.Id != 0) {
                 await PutFlight(flight.Id, flight);
@@ -132,7 +140,6 @@ namespace flight_api.Controllers
             }
 
             using var context = new FlightContext();
-
             context.Flights.Add(flight);
             await context.SaveChangesAsync();
 
