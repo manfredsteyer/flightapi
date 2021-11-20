@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,12 +15,21 @@ namespace flight_api.Controllers
     [ApiController]
     public class FlightController : ControllerBase
     {
+        // IAuthorizationService authorizationService;
 
+        public FlightController() {
+            // this.authorizationService = authorizationService;
+        }
+
+        [HttpGet("secure")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<Flight>>> GetSecureFlights(int? id = null, string from = "", string to = "", bool expand = false) {
+            return await this.GetFlights(id, from, to, expand);
+        }
         // GET: api/Flight
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Flight>>> GetFlights(int? id = null, string from = "", string to = "", bool expand = false)
         {
-
             if (!id.HasValue && expand) {
                 return BadRequest("expand can only be used if one and only one record is requested via providing an id!");
             }

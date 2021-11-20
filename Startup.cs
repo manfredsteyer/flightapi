@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace flight_api
 {
@@ -28,6 +30,17 @@ namespace flight_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options => {
+                    options.Audience = "api";
+                    options.Authority = "https://idsvr4.azurewebsites.net";
+                });
+
+            services.AddAuthorization();
+
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder => {
@@ -74,7 +87,7 @@ namespace flight_api
 
             app.UseCors();
 
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

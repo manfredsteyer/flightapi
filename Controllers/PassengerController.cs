@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,23 @@ namespace flight_api.Controllers
     [ApiController]
     public class PassengerController : ControllerBase
     {
+
+        [HttpGet("me")]
+        [Authorize]
+        public Dictionary<string, string> GetMe() {
+            var result = new Dictionary<string, string>();
+            foreach(var claim in User.Claims) {
+                if (!result.ContainsKey(claim.Type)) {
+                    result.Add(claim.Type, claim.Value);
+                }
+                else {
+                    var current = result[claim.Type];
+                    var updated = current + " " + claim.Value;
+                    result[claim.Type] = updated;
+                }
+            } 
+            return result;
+        }
 
         // GET: api/Passenger
         [HttpGet]
