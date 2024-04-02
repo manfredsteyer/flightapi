@@ -17,9 +17,9 @@ namespace flight_api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FlightBooking>>> GetFlightBookings(long? id = null, long? flightId = null, long? passengerId = null, bool expand = false)
         {
-            if (!id.HasValue && expand) {
-                return BadRequest("expand can only be used if one and only one record is requested via providing an id!");
-            }  
+            // if (!id.HasValue && expand) {
+            //     return BadRequest("expand can only be used if one and only one record is requested via providing an id!");
+            // }  
 
             using var _context = new FlightContext();
 
